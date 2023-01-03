@@ -285,3 +285,12 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,django
+/user/migrations/0003_alter_customuser_phone.py
+/user/migrations/0004_customuser_email_verified_customuser_phone_verified.py
+/user/migrations/0002_alter_customuser_email.py
+/user/migrations/0001_initial.py
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/simple_auth.iml
+/.idea/vcs.xml
