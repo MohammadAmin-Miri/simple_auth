@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from user.models import CustomUser
+from user.tasks import send_verification_code
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -17,5 +18,5 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user = CustomUser(**validated_data)
         user.set_password(password)
         user.save()
-        # TODO celery task
+        send_verification_code.apply_async((validated_data.get('phone'), validated_data.get('email')))
         return user
