@@ -6,6 +6,6 @@ urlpatterns = [
     # path('/'),
     path('signup/', views.SignupUser.as_view(), name='signup'),
     path('verify/', views.VerifyUserPhone.as_view(), name='verify'),
-    # path('signin/',),
+    path('signin/', views.SigninUser.as_view(), name='signin'),
     # path('resend/',),
 ]
