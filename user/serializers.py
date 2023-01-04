@@ -28,8 +28,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user
 
 
-class VerifyUserPhoneSerializer(serializers.ModelSerializer):
-    phone = serializers.CharField(max_length=11)
+class VerifyUserPhoneSerializer(serializers.Serializer):
+    phone = serializers.CharField(max_length=11, write_only=True)
     code = serializers.CharField(write_only=True)
     access_token = serializers.CharField(read_only=True)
     refresh_token = serializers.CharField(read_only=True)
