@@ -31,8 +31,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class VerifyUserPhoneSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=11, write_only=True)
     code = serializers.CharField(write_only=True)
-    access_token = serializers.CharField(read_only=True)
-    refresh_token = serializers.CharField(read_only=True)
+    phone_verified = serializers.BooleanField(read_only=True)
 
     def create(self, validated_data):
         phone = validated_data.get('phone')
@@ -41,7 +40,21 @@ class VerifyUserPhoneSerializer(serializers.Serializer):
             raise VerificationCodeExpiredOrInvalid
         if validated_data.get('code') != valid_code:
             raise VerificationCodeInvalid
-        user = user_model.objects.get(phone=phone)
-        user.phone_verified = True
-        user.save()
-        return get_tokens_for_user(user)
+        user_model.objects.filter(phone=phone).update(phone_verified=True)
+        return {'phone_verified': True}
+
+
+class VerifyUserEmailSerializer(serializers.Serializer):
+    email = serializers.CharField(write_only=True)
+    code = serializers.CharField(write_only=True)
+    email_verified = serializers.BooleanField(read_only=True)
+
+    def create(self, validated_data):
+        email = validated_data.get('email')
+        valid_code = cache.get(email)
+        if not valid_code:
+            raise VerificationCodeExpiredOrInvalid
+        if validated_data.get('code') != valid_code:
+            raise VerificationCodeInvalid
+        user_model.objects.filter(email=email).update(email_verified=True)
+        return {'email_verified': True}

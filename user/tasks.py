@@ -14,9 +14,9 @@ logger = get_task_logger(__name__)
 def send_verification_code(phone=None, email=None):
     if phone and email:
         phone_verification_code = code_generator()
-        email_verification_code = uuid.uuid4().hex
+        email_verification_code = code_generator()
         cache.set(phone, phone_verification_code, 120)
-        cache.set(email_verification_code, email, 120)
+        cache.set(email, email_verification_code, 120)
         # Email and phone sending APIs
         logger.info(f'Verification code: {phone_verification_code}')
         logger.info(f'Verification code: {email_verification_code}')
@@ -26,7 +26,7 @@ def send_verification_code(phone=None, email=None):
         logger.info(f'Verification code: {phone_verification_code}')
     elif email:
         email_verification_code = uuid.uuid4().hex
-        cache.set(email_verification_code, email, 120)
+        cache.set(email, email_verification_code, 120)
         logger.info(f'Verification code: {email_verification_code}')
     else:
         logger.info("Invalid Input")
