@@ -8,7 +8,11 @@ from user.exceptions import (
     VerificationCodeInvalid,
     InvalidPhoneOrEmail,
     WrongPassword,
-    UserNotVerified
+    UserNotVerified,
+    PhoneAlreadyVerified,
+    InvalidPhoneEntry,
+    EmailAlreadyVerified,
+    InvalidEmailEntry,
 )
 from user.tasks import send_verification_code
 from user.utils import get_tokens_for_user
@@ -89,3 +93,45 @@ class SigninUserSerializer(serializers.ModelSerializer):
             if not user.email_verified and not user.phone_verified:
                 raise UserNotVerified
         return get_tokens_for_user(user)
+
+
+class ResendPhoneCodeSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(write_only=True)
+    code_sent = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ['phone']
+
+    def create(self, validated_data):
+        phone = validated_data.get('phone')
+        try:
+            user = user_model.objects.get(phone=phone)
+        except user_model.DoesNotExist:
+            raise InvalidPhoneEntry
+        else:
+            if user.phone_verified:
+                raise PhoneAlreadyVerified
+            send_verification_code.apply_async((validated_data.get('phone')))
+            return {'code_sent': True}
+
+
+class ResendEmailCodeSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(write_only=True)
+    code_sent = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ['email']
+
+    def create(self, validated_data):
+        email = validated_data.get('email')
+        try:
+            user = user_model.objects.get(email=email)
+        except user_model.DoesNotExist:
+            raise InvalidEmailEntry
+        else:
+            if user.phone_verified:
+                raise EmailAlreadyVerified
+            send_verification_code.apply_async((None, validated_data.get('email')))
+            return {'code_sent': True}
