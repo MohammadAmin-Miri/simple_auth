@@ -101,7 +101,7 @@ class ResendPhoneCodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['phone']
+        fields = ['phone', 'code_sent']
 
     def create(self, validated_data):
         phone = validated_data.get('phone')
@@ -122,7 +122,7 @@ class ResendEmailCodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['email']
+        fields = ['email', 'code_sent']
 
     def create(self, validated_data):
         email = validated_data.get('email')
