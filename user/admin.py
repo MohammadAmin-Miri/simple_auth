@@ -5,5 +5,14 @@ from user.models import CustomUser
 
 @admin.register(CustomUser)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'phone', 'email', 'first_name', 'last_name', 'date_joined')
+    list_display = (
+        'id',
+        'phone',
+        'email',
+        'first_name',
+        'last_name',
+        'date_joined',
+        'phone_verified',
+        'email_verified'
+    )
 
