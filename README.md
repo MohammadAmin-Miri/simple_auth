@@ -1,4 +1,4 @@
-For initiating project only use
+For initiating project after creating a virtual environment using requirements.txt only use
     
     python manange.py makemigrations
     python manange.py migrate
