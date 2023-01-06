@@ -8,7 +8,8 @@ from .serializers import (
     SigninUserSerializer,
     ResendPhoneCodeSerializer,
     ResendEmailCodeSerializer,
-    UserDetailSerializer
+    UserDetailSerializer,
+    UserPasswordSerializer
 )
 
 
@@ -45,6 +46,14 @@ class ResendEmailCode(generics.CreateAPIView):
 
 class UserDetail(generics.RetrieveUpdateAPIView):
     serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+class UserPassword(generics.UpdateAPIView):
+    serializer_class = UserPasswordSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):

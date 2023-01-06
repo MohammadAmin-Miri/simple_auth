@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db.models import Q
 from rest_framework import serializers
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from user.exceptions import (
     VerificationCodeExpiredOrInvalid,
@@ -138,11 +140,9 @@ class ResendEmailCodeSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=False)
-
     class Meta:
         model = user_model
-        fields = ['id', 'first_name', 'last_name', 'phone', 'phone_verified', 'email', 'email_verified', 'password']
+        fields = ['id', 'first_name', 'last_name', 'phone', 'phone_verified', 'email', 'email_verified']
         read_only_fields = ['id', 'phone_verified', 'email_verified']
 
     def update(self, instance, validated_data):
@@ -152,8 +152,25 @@ class UserDetailSerializer(serializers.ModelSerializer):
         if 'email' in validated_data:
             instance.email_verified = False
             send_verification_code.apply_async((None, validated_data.get('email')))
-        if 'password' in validated_data:
-            # Add token to blacklist
-            pass
         return super().update(instance, validated_data)
 
+
+class UserPasswordSerializer(serializers.ModelSerializer):
+    access_token = serializers.CharField(read_only=True)
+    refresh_token = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = user_model
+        fields = ['password', 'access_token', 'refresh_token']
+        read_only_fields = ['access_token', 'refresh_token']
+        extra_kwargs = {'password': {'write_only': True, 'required': True}}
+
+    def update(self, instance, validated_data):
+        user = self.context.get('request').user
+        password = validated_data.pop('password')
+        instance.set_password(password)
+        tokens = OutstandingToken.objects.filter(user=user)
+        for token in tokens:
+            BlacklistedToken.objects.create(token=token)
+        instance.save()
+        return get_tokens_for_user(instance)
