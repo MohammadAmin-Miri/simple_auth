@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .exceptions import PhoneOrEmailNotEntered
 from .serializers import (
@@ -7,7 +7,8 @@ from .serializers import (
     VerifyUserPhoneSerializer,
     SigninUserSerializer,
     ResendPhoneCodeSerializer,
-    ResendEmailCodeSerializer
+    ResendEmailCodeSerializer,
+    UserDetailSerializer
 )
 
 
@@ -40,3 +41,11 @@ class ResendPhoneCode(generics.CreateAPIView):
 class ResendEmailCode(generics.CreateAPIView):
     serializer_class = ResendEmailCodeSerializer
     permission_classes = [AllowAny]
+
+
+class UserDetail(generics.RetrieveUpdateAPIView):
+    serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
