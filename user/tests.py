@@ -1,9 +1,8 @@
 import time
 
-from django.test import TestCase
 from django.urls import reverse
 from django.core.cache import cache
-from rest_framework.test import APITestCase, RequestsClient
+from rest_framework.test import APITestCase
 
 
 class SignupFlowTestCase(APITestCase):
