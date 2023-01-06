@@ -5,6 +5,7 @@ from .exceptions import PhoneOrEmailNotEntered
 from .serializers import (
     CustomUserSerializer,
     VerifyUserPhoneSerializer,
+    VerifyUserEmailSerializer,
     SigninUserSerializer,
     ResendPhoneCodeSerializer,
     ResendEmailCodeSerializer,
@@ -26,6 +27,11 @@ class SignupUser(generics.CreateAPIView):
 
 class VerifyUserPhone(generics.CreateAPIView):
     serializer_class = VerifyUserPhoneSerializer
+    permission_classes = [AllowAny]
+
+
+class VerifyUserEmail(generics.CreateAPIView):
+    serializer_class = VerifyUserEmailSerializer
     permission_classes = [AllowAny]
 
 
