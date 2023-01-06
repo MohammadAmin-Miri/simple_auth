@@ -156,4 +156,3 @@ class UserDetailSerializer(serializers.ModelSerializer):
             # Add token to blacklist
             pass
         return super().update(instance, validated_data)
-
