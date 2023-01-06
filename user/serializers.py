@@ -26,7 +26,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = get_user_model()
+        model = user_model
         fields = ['phone', 'email', 'password']
 
     def create(self, validated_data):
@@ -77,7 +77,7 @@ class SigninUserSerializer(serializers.ModelSerializer):
     refresh_token = serializers.CharField(read_only=True)
 
     class Meta:
-        model = get_user_model()
+        model = user_model
         fields = ['phone_or_email', 'password', 'access_token', 'refresh_token']
 
     def create(self, validated_data):
@@ -100,7 +100,7 @@ class ResendPhoneCodeSerializer(serializers.ModelSerializer):
     code_sent = serializers.BooleanField(read_only=True)
 
     class Meta:
-        model = get_user_model()
+        model = user_model
         fields = ['phone', 'code_sent']
 
     def create(self, validated_data):
@@ -121,7 +121,7 @@ class ResendEmailCodeSerializer(serializers.ModelSerializer):
     code_sent = serializers.BooleanField(read_only=True)
 
     class Meta:
-        model = get_user_model()
+        model = user_model
         fields = ['email', 'code_sent']
 
     def create(self, validated_data):
@@ -135,3 +135,25 @@ class ResendEmailCodeSerializer(serializers.ModelSerializer):
                 raise EmailAlreadyVerified
             send_verification_code.apply_async((None, validated_data.get('email')))
             return {'code_sent': True}
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = user_model
+        fields = ['id', 'first_name', 'last_name', 'phone', 'phone_verified', 'email', 'email_verified', 'password']
+        read_only_fields = ['id', 'phone_verified', 'email_verified']
+
+    def update(self, instance, validated_data):
+        if 'phone' in validated_data:
+            instance.phone_verified = False
+            send_verification_code.apply_async((validated_data.get('phone')))
+        if 'email' in validated_data:
+            instance.email_verified = False
+            send_verification_code.apply_async((None, validated_data.get('email')))
+        if 'password' in validated_data:
+            # Add token to blacklist
+            pass
+        return super().update(instance, validated_data)
+
