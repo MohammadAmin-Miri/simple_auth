@@ -166,10 +166,9 @@ class UserPasswordSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
     def update(self, instance, validated_data):
-        user = self.context.get('request').user
         password = validated_data.pop('password')
         instance.set_password(password)
-        tokens = OutstandingToken.objects.filter(user=user)
+        tokens = OutstandingToken.objects.filter(user=instance)
         for token in tokens:
             BlacklistedToken.objects.create(token=token)
         instance.save()
