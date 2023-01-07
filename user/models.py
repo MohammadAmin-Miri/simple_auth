@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
     phone_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'phone'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
