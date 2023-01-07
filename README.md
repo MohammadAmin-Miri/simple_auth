@@ -8,6 +8,6 @@ Also you can have access to admin panel with
     
     admin@test.com
 
-For accessing APIs user
+For accessing APIs use
     
     0.0.0.0:8000/swagger/
