@@ -1,6 +1,6 @@
 import random
 
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, SlidingToken
 
 
 def code_generator():
@@ -8,9 +8,9 @@ def code_generator():
 
 
 def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
+    token = SlidingToken.for_user(user)
 
     return {
-        'refresh_token': str(refresh),
-        'access_token': str(refresh.access_token),
+        'token': str(token),
+        # 'access_token': str(refresh.access_token),
     }

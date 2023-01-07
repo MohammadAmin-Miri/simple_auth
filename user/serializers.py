@@ -75,12 +75,14 @@ class VerifyUserEmailSerializer(serializers.Serializer):
 class SigninUserSerializer(serializers.ModelSerializer):
     phone_or_email = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
-    access_token = serializers.CharField(read_only=True)
-    refresh_token = serializers.CharField(read_only=True)
+    token = serializers.CharField(read_only=True)
+    # access_token = serializers.CharField(read_only=True)
+    # refresh_token = serializers.CharField(read_only=True)
 
     class Meta:
         model = user_model
-        fields = ['phone_or_email', 'password', 'access_token', 'refresh_token']
+        fields = ['phone_or_email', 'password', 'token']
+        # 'access_token', 'refresh_token']
 
     def create(self, validated_data):
         password = validated_data.get('password')
@@ -114,7 +116,7 @@ class ResendPhoneCodeSerializer(serializers.ModelSerializer):
         else:
             if user.phone_verified:
                 raise PhoneAlreadyVerified
-            send_verification_code.apply_async((validated_data.get('phone')))
+            send_verification_code.apply_async((validated_data.get('phone'), None))
             return {'code_sent': True}
 
 
@@ -148,7 +150,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if 'phone' in validated_data:
             instance.phone_verified = False
-            send_verification_code.apply_async((validated_data.get('phone')))
+            send_verification_code.apply_async((validated_data.get('phone'), None))
         if 'email' in validated_data:
             instance.email_verified = False
             send_verification_code.apply_async((None, validated_data.get('email')))
@@ -156,12 +158,14 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 
 class UserPasswordSerializer(serializers.ModelSerializer):
-    access_token = serializers.CharField(read_only=True)
-    refresh_token = serializers.CharField(read_only=True)
+    token = serializers.CharField(read_only=True)
+    # access_token = serializers.CharField(read_only=True)
+    # refresh_token = serializers.CharField(read_only=True)
 
     class Meta:
         model = user_model
-        fields = ['password', 'access_token', 'refresh_token']
+        fields = ['password', 'token']
+        # 'access_token', 'refresh_token']
         read_only_fields = ['access_token', 'refresh_token']
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
@@ -170,6 +174,6 @@ class UserPasswordSerializer(serializers.ModelSerializer):
         instance.set_password(password)
         tokens = OutstandingToken.objects.filter(user=instance)
         for token in tokens:
-            BlacklistedToken.objects.create(token=token)
+            BlacklistedToken.objects.get_or_create(token=token)
         instance.save()
         return get_tokens_for_user(instance)
