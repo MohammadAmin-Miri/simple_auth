@@ -1,12 +1,9 @@
-First you need to be sure that you have redis running locally on localhost:6379
-<br/>
-then for running the project
+For initiating project you only need make sure that you have docker and docker compose installed and with running 
     
-    python manange.py makemigrations
-    python manange.py migrate
+    docker-compose up or docker compose up
 
-Swagger is added to the project so you can access the APIs using the address below
-
-    localhost:8000/swagger/
-
-A docker-compose file will be added to the project
+You can run the project
+<br/>
+Also you can have access to admin panel with
+    
+    admin@test.com
