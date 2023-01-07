@@ -116,7 +116,7 @@ class ResendPhoneCodeSerializer(serializers.ModelSerializer):
         else:
             if user.phone_verified:
                 raise PhoneAlreadyVerified
-            send_verification_code.apply_async((validated_data.get('phone')))
+            send_verification_code.apply_async((validated_data.get('phone'), None))
             return {'code_sent': True}
 
 
@@ -150,7 +150,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if 'phone' in validated_data:
             instance.phone_verified = False
-            send_verification_code.apply_async((validated_data.get('phone')))
+            send_verification_code.apply_async((validated_data.get('phone'), None))
         if 'email' in validated_data:
             instance.email_verified = False
             send_verification_code.apply_async((None, validated_data.get('email')))
