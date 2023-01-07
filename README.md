@@ -7,3 +7,7 @@ You can run the project
 Also you can have access to admin panel with
     
     admin@test.com
+
+For accessing APIs user
+    
+    0.0.0.0:8000/swagger/
