@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 COPY . /code/
 RUN python manage.py makemigrations
 RUN python manage.py migrate --noinput
-RUN python manage.py createsuperuser --noinput --email 'admin@test.com'
+#RUN python manage.py createsuperuser --noinput --email 'admin@test.com'
